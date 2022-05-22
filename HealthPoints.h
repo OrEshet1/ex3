@@ -3,8 +3,9 @@
 #define EX3_HEALTHPOINTS_H
 
 #include <iostream>
-
 const int DEFAULT_MAX_HEALTH = 100;
+
+enum class HealthPoints {InvalidArgument, };
 class HealthPoints {
 public:
 
