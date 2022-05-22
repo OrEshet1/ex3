@@ -2,6 +2,8 @@
 #ifndef EX3_HEALTHPOINTS_H
 #define EX3_HEALTHPOINTS_H
 
+#include <iostream>
+
 const int DEFAULT_MAX_HEALTH = 100;
 class HealthPoints {
 public:
@@ -70,5 +72,62 @@ public:
      *      True if objects are different, False if equal
      */
     friend bool operator!=(const HealthPoints& current, const HealthPoints& other);
+
+    /*
+     * Lesser-than operator of HealthPoints class
+     *
+     * @param current - Reference to the current HealthPoints object being compared
+     * @param other - Reference to HealthPoints object to be compared with
+     * @ return
+     *      True if the value of health of the current object is lesser than the other's,
+     *      False otherwise.
+     */
+    friend bool operator<(const HealthPoints& current, const HealthPoints& other);
+
+    /*
+     * Lesser-or-equal than operator of HealthPoints class
+     *
+     * @param current - Reference to the current HealthPoints object being compared
+     * @param other - Reference to HealthPoints object to be compared with
+     * @ return
+     *      True if the value of health of the current object is lesser than the other's,
+     *      or equal to it, False otherwise.
+     */
+    friend bool operator<=(const HealthPoints& current, const HealthPoints& other);
+
+    /*
+    * Greater-than operator of HealthPoints class
+    *
+    * @param current - Reference to the current HealthPoints object being compared
+    * @param other - Reference to HealthPoints object to be compared with
+    * @ return
+    *      True if the value of health of the current object is greater than the other's,
+    *      False otherwise.
+    */
+    friend bool operator>(const HealthPoints& current, const HealthPoints& other);
+
+    /*
+     * Greater-or-equal than operator of HealthPoints class
+     *
+     * @param current - Reference to the current HealthPoints object being compared
+     * @param other - Reference to HealthPoints object to be compared with
+     * @ return
+     *      True if the value of health of the current object is greater than the other's,
+     *      or equal to it, False otherwise.
+     */
+    friend bool operator>=(const HealthPoints& current, const HealthPoints& other);
+
+    /*
+     * Output operator of HealthPoints class
+     *
+     * @param os - Reference to an ostream type cout
+     * @param current - Reference to the HelathPoints object being printed
+     * @return
+     *      Reference to an instance of ostream
+     */
+    friend std::ostream& operator<<(std::ostream& os, const HealthPoints& current);
+
+private:
+    int m_healthPoints;
 };
 #endif //EX3_HEALTHPOINTS_H
