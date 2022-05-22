@@ -3,10 +3,13 @@
 HealthPoints::HealthPoints(const int maxHealth):
 m_healthPoints(maxHealth)
 {
-    try {
-        if(maxHealth <= 0)
-        {
-            throw
-        }
+    if(maxHealth <= 0)
+    {
+        throw InvalidArgument();
     }
+}
+
+HealthPoints &HealthPoints::operator+(const int value) const
+{
+    return this->m_healthPoints + value;
 }

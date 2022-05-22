@@ -5,7 +5,6 @@
 #include <iostream>
 const int DEFAULT_MAX_HEALTH = 100;
 
-enum class HealthPoints {InvalidArgument, };
 class HealthPoints {
 public:
 
@@ -128,6 +127,7 @@ public:
      */
     friend std::ostream& operator<<(std::ostream& os, const HealthPoints& current);
 
+    class InvalidArgument {};
 private:
     int m_healthPoints;
 };
