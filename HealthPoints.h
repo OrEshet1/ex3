@@ -22,7 +22,7 @@ public:
      * @return -
      *      A reference to the HealthPoints object
      */
-    HealthPoints& operator+(const int value);
+    HealthPoints& operator+(const int value) const;
 
     /*
      * Subtraction operator of HealthPoints class
@@ -31,7 +31,7 @@ public:
      * @return -
      *      A reference to the HealthPoints object
      */
-    HealthPoints& operator-(const int value);
+    HealthPoints& operator-(const int value) const;
 
     /*
      * Addition assignment operator of HealthPoints class
@@ -52,9 +52,23 @@ public:
     HealthPoints& operator-=(const int value);
 
     /*
+     * Equality operator of HealthPoints class
      *
+     * @param current - Reference to the current HealthPoints object being compared
+     * @param other - Reference to HealthPoints object to be compared with
+     * @ return
+     *      True if objects are equal, False if different
      */
-    bool operator==(const HealthPoints& other)
+    friend bool operator==(const HealthPoints& current, const HealthPoints& other);
 
+    /*
+     * Not-Equal operator of HealthPoints class
+     *
+     * @param current - Reference to the current HealthPoints object being compared
+     * @param other - Reference to HealthPoints object to be compared with
+     * @ return
+     *      True if objects are different, False if equal
+     */
+    friend bool operator!=(const HealthPoints& current, const HealthPoints& other);
 };
 #endif //EX3_HEALTHPOINTS_H
