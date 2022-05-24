@@ -36,16 +36,6 @@ public:
     HealthPoints& operator-=(const int points);
 
     /*
-     * Subtraction operator of HealthPoints class
-     *
-     * @param current - Reference to the first HealthPoints object that's being subtracted from
-     * @param points - Number of points to be decreased from the current HealthPoints object
-     * @return -
-     *      The object after the subtraction
-     */
-    HealthPoints operator-(const HealthPoints& current, const int points);
-
-    /*
      * Equality operator of HealthPoints class
      *
      * @param current - Reference to the current HealthPoints object being compared
@@ -134,5 +124,16 @@ bool operator!=(const HealthPoints& current, const HealthPoints& other);
   *      The object with the sum of the received HealthPoints objects
   */
 HealthPoints operator+(const HealthPoints& current, const HealthPoints& other );
+
+
+/*
+ * Subtraction operator of HealthPoints class
+ *
+ * @param current - Reference to the first HealthPoints object that's being subtracted from
+ * @param points - Number of points to be decreased from the current HealthPoints object
+ * @return -
+ *      The object after the subtraction
+ */
+HealthPoints operator-(const HealthPoints& current, const int points);
 
 #endif //EX3_HEALTHPOINTS_H
