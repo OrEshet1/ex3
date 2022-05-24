@@ -133,49 +133,51 @@ public:
 #pragma endregion
 
 private:
-#pragma region Node
+#pragma region Element
 	template <class T>
-	class Node
+	/*This class represents a single element of a Queue,
+	and behaves like a linked list data structure*/
+	class Element
 	{
 	public:
 		/*
-		* C'tor of Node Class
+		* C'tor of Element Class
 		*/
-		Node(T data) : m_data(data)
+		Element(T data) : m_data(data)
 		{
-			m_next = NULL;
+			m_nextElement = NULL;
 		}
 
 		/*
-		* D'tor of Node Class
+		* D'tor of Element Class
 		*/
-		~Node()
+		~Element()
 		{
-			Node* toDelete = this;
+			Element* toDelete = this;
 			while (toDelete) {
-				Node* next = toDelete.m_next;
+				Element* next = toDelete.m_nextElement;
 				delete toDelete;
 				toDelete = next;
 			}
 		}
 
 		/*
-		* Assignment operator of Node class.
+		* Assignment operator of Element class.
 		*
-		* @param node - reference to a Node object.
+		* @param element - reference to an Element object.
 		* @return
-		*      reference to a Node object.
+		*      reference to an Element object.
 		*/
-		Node& operator=(const Node& node) = default;
+		Element& operator=(const Element& element) = default;
 
 	private:
 		T m_data;
-		Node* m_next;
+		Element* m_nextElement;
 	};
 #pragma endregion
 
 	int m_size;
-	Node<T>* m_first;
-	Node<T>* m_last;
+	Element<T>* m_first;
+	Element<T>* m_last;
 };
 #endif //EX3_QUEUE_H

@@ -16,22 +16,22 @@ Queue<T>::~Queue()
 template <class T>
 T& Queue<T>::pushBack(const T& data)
 {
-	Node<T> newNode = Node<T>(data);
+	Element<T> newElement = Element<T>(data);
 	if (m_last) {
-		m_last.m_next = newNode;
+		m_last.m_nextElement = newElement;
 	}
 	else {
 		if (m_first) {
-			m_first.m_next = newNode;
+			m_first.m_nextElement = newElement;
 		}
 		else {
-			m_first = newNode;
+			m_first = newElement;
 		}
 	}
 
-	m_last = newNode;
+	m_last = newElement;
 	m_size++;
-	return newNode;
+	return newElement;
 }
 
 template <class T>
@@ -48,8 +48,8 @@ template <class T>
 void Queue<T>::popFront()
 {
 	if (m_first) {
-		Node<T> head = m_first;
-		m_first = head.m_next;
+		Element<T> head = m_first;
+		m_first = head.m_nextElement;
 		delete head;
 		m_size--;
 	}
