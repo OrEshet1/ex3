@@ -87,3 +87,9 @@ bool operator!=(const HealthPoints& current, const HealthPoints& other)
 {
     return (!(current == other));
 }
+
+std::ostream& operator<<(std::ostream& os, const HealthPoints& current)
+{
+    os << current.m_healthPoints << "(" << current.m_maxHealthPoints << ")";
+    return os;
+}
