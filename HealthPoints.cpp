@@ -52,7 +52,7 @@ HealthPoints HealthPoints::operator-(const int points) const
 
 bool operator==(const HealthPoints& current, const HealthPoints& other)
 {
-    return (current.m_healthPoints == other.m_healthPoints);
+    return !((current < other)||(other < current));
 }
 
 bool operator<(const HealthPoints& current, const HealthPoints& other)
@@ -62,7 +62,7 @@ bool operator<(const HealthPoints& current, const HealthPoints& other)
 
 bool operator>(const HealthPoints& current, const HealthPoints& other)
 {
-    return (!(current < other))&&(!(current == other));
+    return !((current < other)||(current == other));
 }
 bool operator>=(const HealthPoints& current, const HealthPoints& other)
 {

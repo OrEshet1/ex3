@@ -41,16 +41,6 @@ public:
     HealthPoints& operator-=(const int points);
 
     /*
-     * Equality operator of HealthPoints class
-     *
-     * @param current - Reference to the current HealthPoints object being compared
-     * @param other - Reference to HealthPoints object to be compared with
-     * @ return
-     *      True if objects are equal, False if different
-     */
-    friend bool operator==(const HealthPoints& current, const HealthPoints& other);
-
-    /*
      * Lesser-than operator of HealthPoints class
      *
      * @param current - Reference to the current HealthPoints object being compared
@@ -147,5 +137,15 @@ bool operator!=(const HealthPoints& current, const HealthPoints& other);
  *      The object with the sum of the received HealthPoints objects
  */
 HealthPoints operator+(const int points, const HealthPoints& current);
+
+ /*
+ * Equality operator of HealthPoints class
+ *
+ * @param current - Reference to the current HealthPoints object being compared
+ * @param other - Reference to HealthPoints object to be compared with
+ * @ return
+ *      True if objects are equal, False if different
+ */
+bool operator==(const HealthPoints& current, const HealthPoints& other);
 
 #endif //EX3_HEALTHPOINTS_H
