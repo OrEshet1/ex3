@@ -26,6 +26,11 @@ public:
      */
     HealthPoints& operator+=(const int points);
 
+
+    HealthPoints(const HealthPoints&) = default;
+    ~HealthPoints() = default;
+    HealthPoints& operator=(const HealthPoints& other) = default;
+
     /*
      * Subtraction assignment operator of HealthPoints class
      *
@@ -55,21 +60,21 @@ public:
      *      False otherwise.
      */
     friend bool operator<(const HealthPoints& current, const HealthPoints& other);
-
     /*
-  * Addition operator of HealthPoints class
-  *
-  * @param current - Reference to the first HealthPoints object that's being added
-  * @param other - Reference to second HealthPoints object to be added to the first
-  * @return -
-  *      The object with the sum of the received HealthPoints objects
-  */
-    friend HealthPoints operator+(const HealthPoints& current, const HealthPoints& other );
+    * Addition operator of HealthPoints class in case that the int added is on the left
+    *
+    * @param current - Reference to the first HealthPoints object that's being added
+    * @param points - Amount of health points to be added to the HealthPoints object
+    * @return -
+    *      The object with the sum of the received HealthPoints objects
+    */
+    HealthPoints operator+(const int points);
+
     /*
      * Output operator of HealthPoints class
      *
      * @param os - Reference to an ostream type cout
-     * @param current - Reference to the HelathPoints object being printed
+     * @param current - Reference to the HealthPoints object being printed
      * @return
      *      Reference to an instance of ostream
      */
@@ -78,7 +83,7 @@ public:
     class InvalidArgument {};
 private:
     int m_healthPoints;
-    const int m_maxHealthPoints;
+    int m_maxHealthPoints;
 };
 
 /*
@@ -133,5 +138,15 @@ bool operator!=(const HealthPoints& current, const HealthPoints& other);
  *      The object after the subtraction
  */
 HealthPoints operator-(const HealthPoints& current, const int points);
+
+/*
+ * Addition operator of HealthPoints class
+ *
+ * @param points - Amount of health points to be added to the HealthPoints object
+ * @param current - Reference to the first HealthPoints object that's being added
+ * @return -
+ *      The object with the sum of the received HealthPoints objects
+ */
+HealthPoints operator+(const int points, const HealthPoints& current);
 
 #endif //EX3_HEALTHPOINTS_H
