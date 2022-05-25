@@ -68,7 +68,16 @@ public:
     * @return -
     *      The object with the sum of the received HealthPoints objects
     */
-    HealthPoints operator+(const int points);
+    HealthPoints operator+(const int points) const;
+
+    /*
+     * Subtraction operator of HealthPoints class
+     *
+     * @param points - Number of points to be decreased from the current HealthPoints object
+     * @return -
+     *      The object after the subtraction
+     */
+    HealthPoints operator-(const int points) const;
 
     /*
      * Output operator of HealthPoints class
@@ -128,16 +137,6 @@ bool operator>(const HealthPoints& current, const HealthPoints& other);
  *      True if objects are different, False if equal
  */
 bool operator!=(const HealthPoints& current, const HealthPoints& other);
-
-/*
- * Subtraction operator of HealthPoints class
- *
- * @param current - Reference to the first HealthPoints object that's being subtracted from
- * @param points - Number of points to be decreased from the current HealthPoints object
- * @return -
- *      The object after the subtraction
- */
-HealthPoints operator-(const HealthPoints& current, const int points);
 
 /*
  * Addition operator of HealthPoints class
