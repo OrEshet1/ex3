@@ -71,7 +71,7 @@ bool operator<(const HealthPoints& current, const HealthPoints& other)
 
 bool operator>(const HealthPoints& current, const HealthPoints& other)
 {
-    return ((!(current < other))&&(!(current == other)));
+    return (!(current < other))&&(!(current == other));
 }
 bool operator>=(const HealthPoints& current, const HealthPoints& other)
 {
@@ -85,7 +85,7 @@ bool operator<=(const HealthPoints& current, const HealthPoints& other)
 
 bool operator!=(const HealthPoints& current, const HealthPoints& other)
 {
-    return (!(current == other));
+    return !(current == other);
 }
 
 std::ostream& operator<<(std::ostream& os, const HealthPoints& current)

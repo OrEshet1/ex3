@@ -57,6 +57,15 @@ public:
     friend bool operator<(const HealthPoints& current, const HealthPoints& other);
 
     /*
+  * Addition operator of HealthPoints class
+  *
+  * @param current - Reference to the first HealthPoints object that's being added
+  * @param other - Reference to second HealthPoints object to be added to the first
+  * @return -
+  *      The object with the sum of the received HealthPoints objects
+  */
+    friend HealthPoints operator+(const HealthPoints& current, const HealthPoints& other );
+    /*
      * Output operator of HealthPoints class
      *
      * @param os - Reference to an ostream type cout
@@ -114,17 +123,6 @@ bool operator>(const HealthPoints& current, const HealthPoints& other);
  *      True if objects are different, False if equal
  */
 bool operator!=(const HealthPoints& current, const HealthPoints& other);
-
-/*
-  * Addition operator of HealthPoints class
-  *
-  * @param current - Reference to the first HealthPoints object that's being added
-  * @param other - Reference to second HealthPoints object to be added to the first
-  * @return -
-  *      The object with the sum of the received HealthPoints objects
-  */
-HealthPoints operator+(const HealthPoints& current, const HealthPoints& other );
-
 
 /*
  * Subtraction operator of HealthPoints class
