@@ -13,7 +13,7 @@ public:
 	* This function should accept an element of a queue and
 	* reutrn true if it matches a certain condition & false if it doesn't
 	*/
-	typedef bool (*Predicate)(const T&);
+	typedef bool (*Predicate)(const T);
 
 	/*
 	* Type of function for transforming queues.
@@ -97,7 +97,7 @@ public:
 	* @param queue - the queue whose elements are about to get transformed.
 	* @param operation - the operation that will change the given queue's elements.
 	*/
-	static void transform(Queue& m_queue, Operation operation);
+	static void transform(Queue<T>& queue, Operation operation);
 
 	class Iterator;
 	/*
@@ -142,6 +142,7 @@ private:
 
 #pragma region Nested Classes
 #pragma region Iterators
+public:
 	class Iterator
 	{
 	public:
@@ -171,7 +172,7 @@ private:
 		/*
 		* D'tor of Iterator Class
 		*/
-		~Iterator() = delete;
+		~Iterator();
 
 		/*
 		* Dereference operator of Iterator class
@@ -260,7 +261,7 @@ private:
 		/*
 		* D'tor of Iterator Class
 		*/
-		~ConstIterator() = delete;
+		~ConstIterator();
 
 		/*
 		* Dereference operator of ConstIterator class
@@ -304,6 +305,17 @@ private:
 		*/
 		bool operator!=(const ConstIterator& iterator) const;
 
+		/*Exception thrown when there's an attempt to affect a const iterator
+		that has reached the end of its queue*/
+		class InvalidOperation : public std::logic_error
+		{
+		public:
+			/*
+			* C'tor of InvalidOperation class
+			*/
+			InvalidOperation();
+		};
+
 		friend class Queue<T>;
 
 	private:
@@ -335,7 +347,7 @@ private:
 		/*
 		* C'tor of Element Class
 		*/
-		Element(T data) : m_data(data)
+		Element(const T& data) : m_data(data)
 		{
 			m_nextElement = NULL;
 		}
@@ -349,16 +361,14 @@ private:
 		*/
 		Element(const Element& source) : m_data(source.m_data), m_nextElement(source.m_nextElement)
 		{
-			this = Element<T>(source.m_data);
-			Element<T> current = this;
+			*this = Element<T>(source.m_data);
+			Element<T>* current = this;
 			Element<T> temp = source;
-			while (temp) {
-				current.m_nextElement = Element<T>(temp.m_data);
-				current = current.m_nextElement;
-				temp = temp.m_nextElement;
+			while (&temp) {
+				current->getNextElement() = Element<T>(temp.m_data);
+				current = current->m_nextElement;
+				temp = temp.getNextElement();
 			}
-
-			return *this;
 		}
 
 		/*
@@ -370,8 +380,8 @@ private:
 		*/
 		Element& operator=(const Element& element)
 		{
-			this->m_data = element.m_data;
-			this->m_nextElement = element.m_nextElement;
+			m_data = element.m_data;
+			m_nextElement = element.m_nextElement;
 			return *this;
 		}
 
@@ -382,19 +392,29 @@ private:
 		{
 			Element* toDelete = this;
 			while (toDelete) {
-				Element* next = toDelete.m_nextElement;
+				Element* next = toDelete->m_nextElement;
 				delete toDelete;
 				toDelete = next;
 			}
 		}
 
-		Element& getLast()
+		Element getLast()
 		{
-			Element<T> last = this;
-			while (last.m_nextElement) {
-				last = last.m_nextElement;
+			Element<T>* last = this;
+			while (last->m_nextElement) {
+				last = last->m_nextElement;
 			}
 			return *last;
+		}
+
+		T& getData()
+		{
+			return m_data;
+		}
+
+		Element getNextElement()
+		{
+			return *m_nextElement;
 		}
 
 	private:

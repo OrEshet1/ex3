@@ -10,8 +10,10 @@ Queue<T>::Queue()
 
 template<class T>
 Queue<T>::Queue(const Queue& source) :
-	m_size(source.m_size), m_first(Element<T>(source.m_first)), m_last(m_first->getLast())
+	m_size(source.m_size)
 {
+	*m_first = Element<T>(*(source.m_first));
+	*m_last = m_first->getLast();
 }
 
 template<class T>
@@ -34,20 +36,20 @@ T& Queue<T>::pushBack(const T& data)
 {
 	Element<T> newElement = Element<T>(data);
 	if (m_last) {
-		m_last.m_nextElement = newElement;
+		m_last->getNextElement() = newElement;
 	}
 	else {
 		if (m_first) {
-			m_first.m_nextElement = newElement;
+			m_first->getNextElement() = newElement;
 		}
 		else {
-			m_first = newElement;
+			*m_first = newElement;
 		}
 	}
 
-	m_last = newElement;
+	*m_last = newElement;
 	m_size++;
-	return newElement;
+	return newElement.getData();
 }
 
 template <class T>
@@ -57,7 +59,7 @@ T& Queue<T>::front() const
 		throw Queue<T>::EmptyQueue("Can't return an element of an empty queue");
 	}
 
-	return m_first.m_data;
+	return m_first->getData();
 }
 
 template <class T>
@@ -67,8 +69,8 @@ void Queue<T>::popFront()
 		throw Queue<T>::EmptyQueue("Can't pop out the first element of an empty queue");
 	}
 
-	Element<T> head = m_first;
-	m_first = head.m_nextElement;
+	Element<T>* head = m_first;
+	*m_first = head->getNextElement();
 	delete head;
 	m_size--;
 }
@@ -80,10 +82,10 @@ int Queue<T>::size() const
 }
 
 template <class T>
-static Queue<T> Queue<T>::filter(const Queue<T> originalQueue, Predicate predicate)
+Queue<T> Queue<T>::filter(const Queue<T> originalQueue, Queue<T>::Predicate predicate)
 {
 	Queue<T> newQueue;
-	for (Queue<T>::Iterator i = originalQueue.begin(); i != originalQueue.end(); ++i) {
+	for (Queue<T>::ConstIterator i = originalQueue.begin(); i != originalQueue.end(); ++i) {
 		if (predicate(*i)) {
 			newQueue.pushBack(*i);
 		}
@@ -93,7 +95,7 @@ static Queue<T> Queue<T>::filter(const Queue<T> originalQueue, Predicate predica
 }
 
 template<class T>
-static void Queue<T>::transform(Queue& queue, Operation operation)
+void Queue<T>::transform(Queue<T>& queue, Operation operation)
 {
 	for (Queue<T>::Iterator i = queue.begin(); i != queue.end(); ++i) {
 		operation(*i);
@@ -101,25 +103,25 @@ static void Queue<T>::transform(Queue& queue, Operation operation)
 }
 
 template<class T>
-Queue<T>::Iterator Queue<T>::begin()
+typename Queue<T>::Iterator Queue<T>::begin()
 {
 	return Iterator(this, 0);
 }
 
 template<class T>
-Queue<T>::Iterator Queue<T>::end()
+typename Queue<T>::Iterator Queue<T>::end()
 {
 	return Iterator(this, m_size);
 }
 
 template<class T>
-Queue<T>::ConstIterator Queue<T>::begin() const
+typename Queue<T>::ConstIterator Queue<T>::begin() const
 {
 	return ConstIterator(this, 0);
 }
 
 template<class T>
-Queue<T>::ConstIterator Queue<T>::end() const
+typename Queue<T>::ConstIterator Queue<T>::end() const
 {
 	return ConstIterator(this, m_size);
 }
@@ -138,7 +140,7 @@ Queue<T>::Iterator::Iterator(const Iterator& source) :
 }
 
 template<class T>
-Queue<T>::Iterator& Queue<T>::Iterator::operator=(const Iterator& source)
+typename Queue<T>::Iterator& Queue<T>::Iterator::operator=(const Iterator& source)
 {
 	this->m_index = source.m_index;
 	this->m_queue = source.m_queue;
@@ -146,24 +148,29 @@ Queue<T>::Iterator& Queue<T>::Iterator::operator=(const Iterator& source)
 }
 
 template<class T>
-T& Queue<T>::Iterator::operator*() const
+Queue<T>::Iterator::~Iterator()
+{
+}
+
+template<class T>
+typename T& Queue<T>::Iterator::operator*() const
 {
 	if (m_index == m_queue->size()) {
 		throw Queue<T>::Iterator::InvalidOperation();
 	}
 
-	Queue<T> temp = m_queue;
+	Queue<T>* temp = m_queue;
 	int index = 0;
 	while (index < m_index) {
-		temp.popFront();
+		temp->popFront();
 		++index;
 	}
 
-	return temp.front();
+	return temp->front();
 }
 
 template<class T>
-Queue<T>::Iterator& Queue<T>::Iterator::operator++()
+typename Queue<T>::Iterator& Queue<T>::Iterator::operator++()
 {
 	if (m_index == m_queue->size()) {
 		throw Queue<T>::Iterator::InvalidOperation();
@@ -173,7 +180,7 @@ Queue<T>::Iterator& Queue<T>::Iterator::operator++()
 }
 
 template<class T>
-Queue<T>::Iterator Queue<T>::Iterator::operator++(T)
+typename Queue<T>::Iterator Queue<T>::Iterator::operator++(T)
 {
 	if (m_index == m_queue->size()) {
 		throw Queue<T>::Iterator::InvalidOperation();
@@ -185,13 +192,13 @@ Queue<T>::Iterator Queue<T>::Iterator::operator++(T)
 }
 
 template<class T>
-bool Queue<T>::Iterator::operator==(const Iterator& other) const
+typename bool Queue<T>::Iterator::operator==(const Iterator& other) const
 {
 	return this->m_queue == other.m_queue && this->m_index == other.m_index;
 }
 
 template<class T>
-bool Queue<T>::Iterator::operator!=(const Iterator& other) const
+typename bool Queue<T>::Iterator::operator!=(const Iterator& other) const
 {
 	return !(*this == other);
 }
@@ -211,12 +218,12 @@ Queue<T>::ConstIterator::ConstIterator(const Queue<T>* queue, int index) : m_que
 
 template<class T>
 Queue<T>::ConstIterator::ConstIterator(const ConstIterator& source) :
-	m_queue(const Queue<T>(source.m_queue)), m_index(source.m_index)
+	m_queue(Queue<T>(source.m_queue)), m_index(source.m_index)
 {
 }
 
 template<class T>
-Queue<T>::ConstIterator& Queue<T>::ConstIterator::operator=(const ConstIterator& source)
+typename Queue<T>::ConstIterator& Queue<T>::ConstIterator::operator=(const ConstIterator& source)
 {
 	this->m_index = source.m_index;
 	this->m_queue = source.m_queue;
@@ -224,24 +231,24 @@ Queue<T>::ConstIterator& Queue<T>::ConstIterator::operator=(const ConstIterator&
 }
 
 template<class T>
-const T& Queue<T>::ConstIterator::operator*() const
+typename const T& Queue<T>::ConstIterator::operator*() const
 {
 	if (m_index == m_queue->size()) {
 		throw Queue<T>::Iterator::InvalidOperation();
 	}
 
-	Element<T> currentElement = m_queue->m_first;
+	Element<T>* currentElement = m_queue->m_first;
 	int index = 0;
 	while (index < m_index) {
-		currentElement = currentElement.m_nextElement;
+		*currentElement = currentElement->getNextElement();
 		++index;
 	}
 
-	return currentElement.m_data;
+	return currentElement->getData();
 }
 
 template<class T>
-Queue<T>::ConstIterator& Queue<T>::ConstIterator::operator++()
+typename Queue<T>::ConstIterator& Queue<T>::ConstIterator::operator++()
 {
 	if (m_index == m_queue->size()) {
 		throw Queue<T>::Iterator::InvalidOperation();
@@ -251,7 +258,7 @@ Queue<T>::ConstIterator& Queue<T>::ConstIterator::operator++()
 }
 
 template<class T>
-Queue<T>::ConstIterator Queue<T>::ConstIterator::operator++(T)
+typename Queue<T>::ConstIterator Queue<T>::ConstIterator::operator++(T)
 {
 	if (m_index == m_queue->size()) {
 		throw Queue<T>::Iterator::InvalidOperation();
@@ -272,6 +279,17 @@ template<class T>
 bool Queue<T>::ConstIterator::operator!=(const Queue<T>::ConstIterator& iterator) const
 {
 	return !(*this == iterator);
+}
+
+template<class T>
+Queue<T>::ConstIterator::~ConstIterator()
+{
+}
+
+template<class T>
+Queue<T>::ConstIterator::InvalidOperation::InvalidOperation() :
+	std::logic_error("Const-Iterator has reached the end of the queue")
+{
 }
 #pragma endregion
 
