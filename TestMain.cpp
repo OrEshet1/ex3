@@ -10,14 +10,14 @@ namespace HealthPointsTests {
 	bool testComparisonOperators();
 	bool testOutputOperator();
 }
-/*
+
 namespace QueueTests {
 	bool testQueueMethods();
 	bool testModuleFunctions();
 	bool testExceptions();
 	bool testConstQueue();
 }
-*/
+
 std::function<bool()> testsList[] = {
 	HealthPointsTests::testInitialization,
 	HealthPointsTests::testArithmaticOperators,
