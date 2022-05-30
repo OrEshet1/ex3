@@ -81,27 +81,6 @@ int Queue<T>::size() const
 	return m_size;
 }
 
-template <class T, class Predicate>
-Queue<T> Queue<T>::filter(const Queue<T> originalQueue, Predicate predicate)
-{
-	Queue<T> newQueue;
-	for (Queue<T>::ConstIterator i = originalQueue.begin(); i != originalQueue.end(); ++i) {
-		if (predicate(*i)) {
-			newQueue.pushBack(*i);
-		}
-	}
-
-	return newQueue;
-}
-
-template<class T, class Operation>
-void Queue<T>::transform(Queue<T>& queue, Operation operation)
-{
-	for (Queue<T>::Iterator i = queue.begin(); i != queue.end(); ++i) {
-		operation(*i);
-	}
-}
-
 template<class T>
 typename Queue<T>::Iterator Queue<T>::begin()
 {

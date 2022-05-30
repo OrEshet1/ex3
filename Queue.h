@@ -78,8 +78,17 @@ public:
 	* @return
 	*      reference to the new element's value.
 	*/
-	template<class Predicate>
-	static Queue filter(const Queue<T> originalQueue, Predicate predicate);
+	template<class T, class Predicate>
+	static Queue filter(const Queue<T> originalQueue, Predicate predicate)
+	{
+		Queue<T> newQueue;
+		for (Queue<T>::ConstIterator i = originalQueue.begin(); i != originalQueue.end(); ++i) {
+			if (predicate(*i)) {
+				newQueue.pushBack(*i);
+			}
+		}
+		return newQueue;
+	}
 
 	/*
 	* Transforms each element of the queue using the given operation.
@@ -88,8 +97,13 @@ public:
 	* @param operation - the operation that will change the given queue's elements
 	*					(Operation = functor that accepts an element of a queue and changes it somehow).
 	*/
-	template<class Operation>
-	static void transform(Queue<T>& queue, Operation operation);
+	template<class T, class Operation>
+	static void transform(Queue<T>& queue, Operation operation)
+	{
+		for (Queue<T>::Iterator i = queue.begin(); i != queue.end(); ++i) {
+			operation(*i);
+		}
+	}
 
 	class Iterator;
 	/*
