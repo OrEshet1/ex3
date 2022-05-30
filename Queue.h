@@ -9,19 +9,6 @@ class Queue
 {
 public:
 	/*
-	* Type of function for filtering queues.
-	* This function should accept an element of a queue and
-	* reutrn true if it matches a certain condition & false if it doesn't
-	*/
-	typedef bool (*Predicate)(const T);
-
-	/*
-	* Type of function for transforming queues.
-	* This function should accept an element of a queue and change it
-	*/
-	typedef void (*Operation)(T&);
-
-	/*
 	 * C'tor of Queue Class
 	 */
 	Queue();
@@ -84,19 +71,24 @@ public:
 	* Creates a new queue consists of the given queue's elements that have matched the given predicate.
 	*
 	* @param originalQueue - the queue whose relevant elements are to be inserted to the new queue.
-	* @param predicate - the predicate the original queue's elements will be filtered by.
-
+	* @param predicate - the predicate the original queue's elements will be filtered by
+	*					(Predicate = functor that accepts an element of a queue and
+	*					reutrns true if it matches a certain condition & false if it doesn't).
+	*
 	* @return
 	*      reference to the new element's value.
 	*/
+	template<class Predicate>
 	static Queue filter(const Queue<T> originalQueue, Predicate predicate);
 
 	/*
 	* Transforms each element of the queue using the given operation.
 	*
 	* @param queue - the queue whose elements are about to get transformed.
-	* @param operation - the operation that will change the given queue's elements.
+	* @param operation - the operation that will change the given queue's elements
+	*					(Operation = functor that accepts an element of a queue and changes it somehow).
 	*/
+	template<class Operation>
 	static void transform(Queue<T>& queue, Operation operation);
 
 	class Iterator;
