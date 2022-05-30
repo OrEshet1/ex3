@@ -36,11 +36,11 @@ T& Queue<T>::pushBack(const T& data)
 {
 	Element<T> newElement = Element<T>(data);
 	if (m_last) {
-		m_last->getNextElement() = newElement;
+		m_last->setNextElement(&newElement);
 	}
 	else {
 		if (m_first) {
-			m_first->getNextElement() = newElement;
+			m_first->setNextElement(&newElement);
 		}
 		else {
 			*m_first = newElement;

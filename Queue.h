@@ -423,6 +423,11 @@ private:
 			return *m_nextElement;
 		}
 
+		void setNextElement(Element<T>* newNextElement)
+		{
+			this->m_nextElement = newNextElement;
+		}
+
 	private:
 		T m_data;
 		Element* m_nextElement;
