@@ -209,7 +209,7 @@ public:
     class EmptyQueue {};
 private:
     int m_size;
-    template<class T>
+    template<class S>
     class Element;
     Element<T>* m_first;
     Element<T>* m_last;
