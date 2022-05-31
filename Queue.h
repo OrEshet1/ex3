@@ -217,7 +217,7 @@ public:
 		* C'tor of Iterator Class
 		*/
 		Iterator(Queue<T>* queue, int index):
-                m_queue(*queue), m_index(index)
+                m_queue(queue), m_index(index)
         {
         }
 
@@ -229,7 +229,7 @@ public:
 		*      reference to a Iterator object.
 		*/
 		Iterator(const Iterator& source):
-                m_queue(Queue<T>(source.m_queue)), m_index(source.m_index)
+                m_queue(source.m_queue), m_index(source.m_index)
         {
         }
 
@@ -264,19 +264,19 @@ public:
 		*/
 		T& operator*() const
         {
-            if (m_index == m_queue.size()) {
+            if (m_index == m_queue->size()) {
                 throw InvalidOperation();
             }
 
-            Queue<T>* temp = m_queue;
+            Element<T>* currentElement = m_queue->m_first;
             int index = 0;
             while (index < m_index) {
-                temp->popFront();
+                currentElement = currentElement->getNextElement();
                 ++index;
             }
-            return temp->front();
-        }
 
+            return currentElement->getData();
+        }
 
 		/*
 		* Pre-increment operator of Iterator class
@@ -351,7 +351,7 @@ public:
         class InvalidOperation {};
 
 	private:
-		Queue<T> m_queue;
+        Queue<T>* m_queue;
 		int m_index;
 	};
 
