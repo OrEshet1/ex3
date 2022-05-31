@@ -156,6 +156,11 @@ public:
         return true;
     }
 
+    bool operator!=(const Queue& other) const
+    {
+        return !(this == other);
+    }
+
     class Iterator;
 
     /*
@@ -311,18 +316,6 @@ public:
         }
 
 		/*
-		* Equality operator of Iterator class
-		*
-		* @param other - Reference to Iterator object to be compared with
-		* @return
-		*      True if objects are equal, False if different
-		*/
-		bool operator==(const Iterator& other) const
-        {
-            return this->m_queue == other.m_queue && this->m_index == other.m_index;
-        }
-
-		/*
 		* Not-Equal operator of Iterator class
 		*
 		* @param other - Reference to Iterator object to be compared with
@@ -331,7 +324,7 @@ public:
 		*/
 		bool operator!=(const Iterator& other) const
         {
-            return !(this == other);
+            return this->m_index != other.m_index || this->m_queue != other.m_queue;
         }
 
 		/*Exception thrown when there's an attempt to affect an iterator
@@ -578,11 +571,6 @@ private:
 		Element *getNextElement()
 		{
 			return m_nextElement;
-		}
-
-		void setNextElement(Element<T>* newNextElement)
-		{
-			this->m_nextElement = newNextElement;
 		}
 
 	private:
