@@ -52,10 +52,11 @@ public:
         }
         Queue<T> backup = *this;
         try {
-            while (this->m_size) {
+            /*while (this->m_size) {
                 popFront();
             }
-            m_last = NULL;
+            m_last = NULL;*/
+            delete this;
             Element <T>* existingElement = queue.m_first;
             while (existingElement) {
                 this->pushBack(existingElement->getData());
@@ -63,10 +64,11 @@ public:
             }
         }
         catch (std::bad_alloc &) {
-            while (this->m_size) {
+            /*while (this->m_size) {
                 popFront();
             }
-            m_last = NULL;
+            m_last = NULL;*/
+            delete this;
             Element <T>* oldElement = backup.m_first;
             while (oldElement) {
                 this->pushBack(oldElement->getData());
