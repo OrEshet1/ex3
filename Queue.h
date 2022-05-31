@@ -5,38 +5,83 @@
 using std::string;
 
 template<class T>
-class Queue
-{
+class Queue {
 public:
-	/*
-	 * C'tor of Queue Class
-	 */
-	Queue();
+    /*
+     * C'tor of Queue Class
+     */
+    Queue() {
+        m_size = 0;
+        m_first = m_last = NULL;
+    }
 
-	/*
-	* Copy C'tor of Queue class.
-	*
-	* @param source - reference to a Queue object.
-	* @return
-	*      reference to a Queue object.
-	*/
-	Queue(const Queue& source);
+    /*
+    * Copy C'tor of Queue class.
+    *
+    * @param source - reference to a Queue object.
+    * @return
+    *      reference to a Queue object.
+    */
+    Queue(const Queue &source) :
+            m_size(0), m_first(NULL), m_last(NULL) {
+        Element <T> *existingQueue = source.m_first;
+        try{
+            while (existingQueue) {
+                this->pushBack(existingQueue->getData());
+                existingQueue = existingQueue->getNextElement();
+            }
+        }
+        catch (std::bad_alloc &)  //NECCESERY?
+        {
+            delete this;
+        }
+    }
 
-	/*
-	* Assignment operator of Queue class.
-	*
-	* @param queue - reference to a Queue object.
-	* @return
-	*      reference to a Queue object.
-	*/
-	Queue& operator=(const Queue& queue);
+    /*
+    * Assignment operator of Queue class.
+    *
+    * @param queue - reference to a Queue object.
+    * @return
+    *      reference to a Queue object.
+    */
+    Queue& operator=(const Queue &queue)
+    {
+        if(this == &queue)
+        {
+            return *this;
+        }
+        Queue<T> backup = *this;
+        try {
+            delete this;
+            Element <T> *existingElement = queue->m_first;
+            while (existingElement) {
+                this->pushBack(existingElement->getData())
+                *existingElement = existingElement->getNextElement();
+            }
+        }
+        catch (std::bad_alloc &) {
+            delete this;
+            Element <T> *oldElement = backup->m_first;
+            while (oldElement) {
+                this->pushBack(oldElement->getData())
+                *oldElement = oldElement->getNextElement();
+            }
+        }
+        delete backup;
+        return *this;
+    }
 
-	/*
-	 * D'tor of Queue class.
-	 */
-	~Queue();
+    /*
+     * D'tor of Queue class.
+     */
+    ~Queue() {
+        while (this->m_size) {
+            popFront();
+        }
+    }
 
-	/*
+
+    /*
 	* Inserts a new element to the end of the queue
 	*
 	* @param data - refernce to the new element's value.
@@ -44,101 +89,119 @@ public:
 	* @return
 	*      reference to the new element's value.
 	*/
-	T& pushBack(const T& data);
+    void pushBack(const T &data) {
+        Element <T>* newElement = new Element<T>(data);
+        if (m_last) {
+            m_last->setNextElement(newElement);
+            m_last = newElement;
+        } else {
+            m_first = newElement;
+            m_last = newElement;
+        }
+        m_size++;
+    }
 
-	/*
-	* Returns queue's first element.
-	*
-	* @return
-	*      reference to queue's first element.
-	*/
-	T& front() const;
+    /*
+    * Returns queue's first element.
+    *
+    * @return
+    *      reference to queue's first element.
+    */
+    T &front() const {
+        if (!m_first) {
+            throw Queue::EmptyQueue();
+        }
+        return m_first->getData();
+    }
 
-	/*
-	* Pops the first element out of queue.
-	*/
-	void popFront();
+    /*
+    * Pops the first element out of queue.
+    */
+    void popFront() {
+        if (!m_first) {
+            throw Queue::EmptyQueue();
+        }
 
-	/*
-	* Returns queue's size.
-	*
-	* @return
-	*      queue's elements count if it's not empty, and 0 otherwise.
-	*/
-	int size() const;
+        Element <T> *head = m_first;
+        m_first = head->getNextElement();
+        delete head;
+        m_size--;
+    }
 
-	/*
-	* Creates a new queue consists of the given queue's elements that have matched the given predicate.
-	*
-	* @param originalQueue - the queue whose relevant elements are to be inserted to the new queue.
-	* @param predicate - the predicate the original queue's elements will be filtered by
-	*					(Predicate = functor that accepts an element of a queue and
-	*					reutrns true if it matches a certain condition & false if it doesn't).
-	*
-	* @return
-	*      reference to the new element's value.
-	*/
-	template<class T, class Predicate>
-	static Queue filter(const Queue<T> originalQueue, Predicate predicate)
-	{
-		Queue<T> newQueue;
-		for (Queue<T>::ConstIterator i = originalQueue.begin(); i != originalQueue.end(); ++i) {
-			if (predicate(*i)) {
-				newQueue.pushBack(*i);
-			}
-		}
-		return newQueue;
-	}
+    /*
+    * Returns queue's size.
+    *
+    * @return
+    *      queue's elements count if it's not empty, and 0 otherwise.
+    */
+    int size() const {
+        return m_size;
+    }
 
-	/*
-	* Transforms each element of the queue using the given operation.
-	*
-	* @param queue - the queue whose elements are about to get transformed.
-	* @param operation - the operation that will change the given queue's elements
-	*					(Operation = functor that accepts an element of a queue and changes it somehow).
-	*/
-	template<class T, class Operation>
-	static void transform(Queue<T>& queue, Operation operation)
-	{
-		for (Queue<T>::Iterator i = queue.begin(); i != queue.end(); ++i) {
-			operation(*i);
-		}
-	}
+    bool operator==(const Queue& other) const
+    {
+        Element<T>* temp = other.m_first;
+        Element<T>* current = this->m_first;
+        while(temp)
+        {
+            if(temp->getData() != current->getData())
+            {
+                return false;
+            }
+            temp = temp->getNextElement();
+            current = current->getNextElement();
+        }
+        delete temp;
+        delete current;
+        return true;
+    }
 
-	class Iterator;
-	/*
-	* Returns the beginning of the queue
-	*
-	* @return
-	*	   Iterator pointing to the first element of the queue
-	*/
-	Iterator begin();
+    class Iterator;
 
-	/*
-	* Returns the end of the queue
-	*
-	* @return
-	*	   Iterator pointing to the end of the queue
-	*/
-	Iterator end();
+    /*
+    * Returns the beginning of the queue
+    *
+    * @return
+    *	   Iterator pointing to the first element of the queue
+    */
+    Iterator begin() {
+        return Iterator(this, 0);
+    }
 
-	class ConstIterator;
-	/*
-	* Returns the beginning of a constant queue
-	*
-	* @return
-	*	   Iterator pointing to the first element of the queue
-	*/
-	ConstIterator begin() const;
+    /*
+    * Returns the end of the queue
+    *
+    * @return
+    *	   Iterator pointing to the end of the queue
+    */
+    Iterator end() {
+        return Iterator(this, m_size);
+    }
 
-	/*
-	* Returns the end of a constant queue
-	*
-	* @return
-	*	   Iterator pointing to the end of the queue
-	*/
-	ConstIterator end() const;
+    class ConstIterator;
 
+    /*
+    * Returns the beginning of a constant queue
+    *
+    * @return
+    *	   Iterator pointing to the first element of the queue
+    */
+    ConstIterator begin() const {
+        return ConstIterator(this, 0);
+    }
+
+    /*
+    * Returns the end of a constant queue
+    *
+    * @return
+    *	   Iterator pointing to the end of the queue
+    */
+    ConstIterator end() const
+    {
+        return ConstIterator(this, m_size);
+    }
+
+    class EmptyQueue {};
 private:
 	int m_size;
 	template<class T>
@@ -146,8 +209,6 @@ private:
 	Element<T>* m_first;
 	Element<T>* m_last;
 
-#pragma region Nested Classes
-#pragma region Iterators
 public:
 	class Iterator
 	{
@@ -155,7 +216,10 @@ public:
 		/*
 		* C'tor of Iterator Class
 		*/
-		Iterator(Queue<T>* queue, int index);
+		Iterator(Queue<T>* queue, int index):
+                m_queue(*queue), m_index(index)
+        {
+        }
 
 		/*
 		* Copy C'tor of Iterator class.
@@ -164,7 +228,10 @@ public:
 		* @return
 		*      reference to a Iterator object.
 		*/
-		Iterator(const Iterator& source);
+		Iterator(const Iterator& source):
+                m_queue(Queue<T>(source.m_queue)), m_index(source.m_index)
+        {
+        }
 
 		/*
 		* Assignment operator of Iterator class.
@@ -173,12 +240,21 @@ public:
 		* @return
 		*      reference to an Iterator object.
 		*/
-		Iterator& operator=(const Iterator& source);
+		Iterator& operator=(const Iterator& source)
+        {
+            if(this == source)
+            {
+                return *this;
+            }
+            this->m_index = source.m_index;
+            this->m_queue = source.m_queue;
+            return *this;
+        }
 
 		/*
 		* D'tor of Iterator Class
 		*/
-		~Iterator();
+		~Iterator() = default;
 
 		/*
 		* Dereference operator of Iterator class
@@ -186,7 +262,21 @@ public:
 		* @return
 		*      Reference to the value of the current iteration's queue element
 		*/
-		T& operator*() const;
+		T& operator*() const
+        {
+            if (m_index == m_queue.size()) {
+                throw InvalidOperation();
+            }
+
+            Queue<T>* temp = m_queue;
+            int index = 0;
+            while (index < m_index) {
+                temp->popFront();
+                ++index;
+            }
+            return temp->front();
+        }
+
 
 		/*
 		* Pre-increment operator of Iterator class
@@ -194,7 +284,14 @@ public:
 		* @return
 		*      Reference to an iterator indicating the next element of the queue
 		*/
-		Iterator& operator++();
+		Iterator& operator++()
+        {
+            if (m_index == m_queue.size()) {
+                throw InvalidOperation();
+            }
+            ++m_index;
+            return *this;
+        }
 
 		/*
 		* Post-increment operator of Iterator class
@@ -202,7 +299,16 @@ public:
 		* @return
 		*      Reference to an iterator indicating the next element of the queue
 		*/
-		Iterator operator++(T);
+		Iterator operator++(T)
+        {
+            if (m_index == m_queue.size()) {
+                throw InvalidOperation();
+            }
+
+            Iterator result = *this;
+            ++* this;
+            return result;
+        }
 
 		/*
 		* Equality operator of Iterator class
@@ -211,7 +317,10 @@ public:
 		* @return
 		*      True if objects are equal, False if different
 		*/
-		bool operator==(const Iterator& other) const;
+		bool operator==(const Iterator& other) const
+        {
+            return this->m_queue == other.m_queue && this->m_index == other.m_index;
+        }
 
 		/*
 		* Not-Equal operator of Iterator class
@@ -220,21 +329,29 @@ public:
 		* @ return
 		*      True if objects are different, False if equal
 		*/
-		bool operator!=(const Iterator& other) const;
+		bool operator!=(const Iterator& other) const
+        {
+            return !(this == other);
+        }
 
 		/*Exception thrown when there's an attempt to affect an iterator
-		that has reached the end of its queue*/
+		that has reached the end of its queue
 		class InvalidOperation : public std::logic_error
 		{
 		public:
-			/*
+
 			* C'tor of InvalidOperation class
-			*/
-			InvalidOperation();
-		};
+
+			InvalidOperation():
+                    std::logic_error("Iterator has reached the end of the queue")
+            {
+            }
+
+		};*/
+        class InvalidOperation {};
 
 	private:
-		Queue<T>* m_queue;
+		Queue<T> m_queue;
 		int m_index;
 	};
 
@@ -244,7 +361,10 @@ public:
 		/*
 		* C'tor of ConstIterator Class
 		*/
-		ConstIterator(const Queue<T>* queue, int index);
+		ConstIterator(const Queue<T>* queue, int index):
+        m_queue(queue), m_index(index)
+        {
+        }
 
 		/*
 		* Copy C'tor of ConstIterator class.
@@ -253,7 +373,12 @@ public:
 		* @return
 		*      reference to a ConstIterator object.
 		*/
-		ConstIterator(const ConstIterator& source);
+		ConstIterator(const ConstIterator& source) :
+        m_index(source.m_index)
+        {
+            const Queue<T>* constQueue = source.m_queue;
+            m_queue = constQueue;
+        }
 
 		/*
 		* Assignment operator of ConstIterator class.
@@ -262,12 +387,21 @@ public:
 		* @return
 		*      reference to a ConstIterator object.
 		*/
-		ConstIterator& operator=(const ConstIterator& source);
+		ConstIterator& operator=(const ConstIterator& source)
+        {
+            if(this == source)
+            {
+                return *this;
+            }
+            this->m_index = source.m_index;
+            this->m_queue = source.m_queue;
+            return *this;
+        }
 
 		/*
 		* D'tor of Iterator Class
 		*/
-		~ConstIterator();
+		~ConstIterator() = default;
 
 		/*
 		* Dereference operator of ConstIterator class
@@ -275,7 +409,21 @@ public:
 		* @return
 		*      Const reference to the value of the current iteration's queue element
 		*/
-		const T& operator*() const;
+		const T& operator*() const
+        {
+            if (m_index == m_queue->size()) {
+                throw InvalidOperation();
+            }
+
+            Element<T>* currentElement = m_queue->m_first;
+            int index = 0;
+            while (index < m_index) {
+                currentElement = currentElement->getNextElement();
+                ++index;
+            }
+
+            return currentElement->getData();
+        }
 
 		/*
 		* Pre-increment operator of ConstIterator class
@@ -283,7 +431,14 @@ public:
 		* @return
 		*      Reference to a ConstIterator indicating the next element of the queue
 		*/
-		ConstIterator& operator++();
+		ConstIterator& operator++()
+        {
+            if (m_index == m_queue->size()) {
+                throw InvalidOperation();
+            }
+            ++m_index;
+            return *this;
+        }
 
 		/*
 		* Post-increment operator of ConstIterator class
@@ -291,7 +446,16 @@ public:
 		* @return
 		*      Reference to a ConstIterator indicating the next element of the queue
 		*/
-		ConstIterator operator++(T);
+		ConstIterator operator++(T)
+        {
+            if (m_index == m_queue->size()) {
+                throw InvalidOperation();
+            }
+
+            Iterator result = *this;
+            ++* this;
+            return result;
+        }
 
 		/*
 		* Equality operator of ConstIterator class
@@ -300,7 +464,10 @@ public:
 		* @ return
 		*      True if objects are equal, False if different
 		*/
-		bool operator==(const ConstIterator& iterator) const;
+		bool operator==(const ConstIterator& iterator) const
+        {
+            return this->m_queue == iterator.m_queue && this->m_index == iterator.m_index;
+        }
 
 		/*
 		* Not-Equal operator of Iterator class
@@ -309,20 +476,26 @@ public:
 		* @ return
 		*      True if objects are different, False if equal
 		*/
-		bool operator!=(const ConstIterator& iterator) const;
+		bool operator!=(const ConstIterator& iterator) const
+        {
+            return !(*this == iterator);
+        }
 
 		/*Exception thrown when there's an attempt to affect a const iterator
-		that has reached the end of its queue*/
+		that has reached the end of its queue
 		class InvalidOperation : public std::logic_error
 		{
 		public:
-			/*
-			* C'tor of InvalidOperation class
-			*/
-			InvalidOperation();
-		};
 
-		friend class Queue<T>;
+			* C'tor of InvalidOperation class
+
+			InvalidOperation() :
+            std::logic_error("Const-Iterator has reached the end of the queue")
+            {
+            }
+		};*/
+        class InvalidOperation {};
+		friend class Queue<T>;  //IS THIS NECCESERY?
 
 	private:
 		const Queue<T>* m_queue;
@@ -331,15 +504,7 @@ public:
 #pragma endregion
 
 #pragma region Exceptions
-	/*Exception thrown when there's an attempt to affect an empty queue*/
-	class EmptyQueue : public std::logic_error
-	{
-	public:
-		/*
-		* C'tor of EmptyQueue class
-		*/
-		EmptyQueue(const string& what);
-	};
+
 #pragma endregion
 
 #pragma region Element
@@ -353,7 +518,7 @@ private:
 		/*
 		* C'tor of Element Class
 		*/
-		Element(const T& data) : m_data(data)
+		Element(const T data) : m_data(data)
 		{
 			m_nextElement = NULL;
 		}
@@ -365,17 +530,21 @@ private:
 		* @return
 		*      reference to an Element object.
 		*/
-		Element(const Element& source) : m_data(source.m_data), m_nextElement(source.m_nextElement)
-		{
-			*this = Element<T>(source.m_data);
-			Element<T>* current = this;
-			Element<T> temp = source;
-			while (&temp) {
-				current->getNextElement() = Element<T>(temp.m_data);
-				current = current->m_nextElement;
-				temp = temp.getNextElement();
-			}
-		}
+		Element(const Element& source):
+        m_data(source.m_data), m_nextElement(NULL)
+        {
+        }
+
+        /*
+         * Function sets the next element into the given pointer
+         *
+         * @param newNextElement - pointer to a next Element
+         */
+        void setNextElement(Element<T>* newNextElement)
+        {
+            this->m_nextElement = newNextElement;
+        }
+
 
 		/*
 		* Assignment operator of Element class.
@@ -384,25 +553,13 @@ private:
 		* @return
 		*      reference to an Element object.
 		*/
-		Element& operator=(const Element& element)
-		{
-			m_data = element.m_data;
-			m_nextElement = element.m_nextElement;
-			return *this;
-		}
+		Element& operator=(const Element& element) = default;
 
 		/*
 		* D'tor of Element Class
 		*/
-		~Element()
-		{
-			Element* toDelete = this;
-			while (toDelete) {
-				Element* next = toDelete->m_nextElement;
-				delete toDelete;
-				toDelete = next;
-			}
-		}
+		~Element() = default;
+
 
 		Element getLast()
 		{
@@ -418,9 +575,9 @@ private:
 			return m_data;
 		}
 
-		Element getNextElement()
+		Element *getNextElement()
 		{
-			return *m_nextElement;
+			return m_nextElement;
 		}
 
 	private:
@@ -430,4 +587,42 @@ private:
 #pragma endregion
 #pragma endregion
 };
+
+/*
+* Creates a new queue consists of the given queue's elements that have matched the given predicate.
+*
+* @param originalQueue - the queue whose relevant elements are to be inserted to the new queue.
+* @param predicate - the predicate the original queue's elements will be filtered by
+*					(Predicate = functor that accepts an element of a queue and
+*					returns true if it matches a certain condition & false if it doesn't).
+*
+* @return
+*      reference to the new element's value.
+*/
+template<class T, class Predicate>
+Queue<T> filter(const Queue<T> originalQueue, Predicate predicate)
+{
+    Queue<T> newQueue;
+    for (typename Queue<T>::ConstIterator i = originalQueue.begin(); i != originalQueue.end(); ++i) {
+        if (predicate(*i)) {
+            newQueue.pushBack(*i);
+        }
+    }
+    return newQueue;
+}
+
+/*
+	* Transforms each element of the queue using the given operation.
+	*
+	* @param queue - the queue whose elements are about to get transformed.
+	* @param operation - the operation that will change the given queue's elements
+	*					(Operation = functor that accepts an element of a queue and changes it somehow).
+	*/
+template<class T, class Operation>
+void transform(Queue<T>& queue, Operation operation)
+{
+    for (typename Queue<T>::Iterator i = queue.begin(); i != queue.end(); ++i) {
+        operation(*i);
+    }
+}
 #endif //EX3_QUEUE_H
