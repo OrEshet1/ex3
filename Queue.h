@@ -52,22 +52,27 @@ public:
         }
         Queue<T> backup = *this;
         try {
-            delete this;
-            Element <T> *existingElement = queue->m_first;
+            while (this->m_size) {
+                popFront();
+            }
+            m_last = NULL;
+            Element <T>* existingElement = queue.m_first;
             while (existingElement) {
                 this->pushBack(existingElement->getData());
                 existingElement = existingElement->getNextElement();
             }
         }
         catch (std::bad_alloc &) {
-            delete this;
-            Element <T> *oldElement = backup->m_first;
+            while (this->m_size) {
+                popFront();
+            }
+            m_last = NULL;
+            Element <T>* oldElement = backup.m_first;
             while (oldElement) {
                 this->pushBack(oldElement->getData());
                 oldElement = oldElement->getNextElement();
             }
         }
-        delete backup;
         return *this;
     }
 
@@ -124,7 +129,12 @@ public:
 
         Element <T> *head = m_first;
         m_first = head->getNextElement();
+
+        if (head == m_last) {
+            m_last = NULL;
+        }
         delete head;
+
         m_size--;
     }
 
@@ -304,7 +314,7 @@ public:
         * @return
         *      Reference to an iterator indicating the next element of the queue
         */
-        Iterator operator++(T)
+        Iterator operator++(int)
         {
             if (m_index == m_queue->size()) {
                 throw InvalidOperation();
@@ -439,7 +449,7 @@ public:
         * @return
         *      Reference to a ConstIterator indicating the next element of the queue
         */
-        ConstIterator operator++(T)
+        ConstIterator operator++(int)
         {
             if (m_index == m_queue->size()) {
                 throw InvalidOperation();
