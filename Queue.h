@@ -55,16 +55,16 @@ public:
             delete this;
             Element <T> *existingElement = queue->m_first;
             while (existingElement) {
-                this->pushBack(existingElement->getData())
-                *existingElement = existingElement->getNextElement();
+                this->pushBack(existingElement->getData());
+                existingElement = existingElement->getNextElement();
             }
         }
         catch (std::bad_alloc &) {
             delete this;
             Element <T> *oldElement = backup->m_first;
             while (oldElement) {
-                this->pushBack(oldElement->getData())
-                *oldElement = oldElement->getNextElement();
+                this->pushBack(oldElement->getData());
+                oldElement = oldElement->getNextElement();
             }
         }
         delete backup;
