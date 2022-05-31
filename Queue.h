@@ -493,7 +493,7 @@ public:
         int m_index;
     };
 private:
-    template <class T>
+    template <class S>
     /*This class represents a single element of a Queue,
     and behaves like a linked list data structure*/
     class Element
