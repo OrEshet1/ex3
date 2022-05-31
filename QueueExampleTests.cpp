@@ -71,7 +71,6 @@ namespace QueueTests {
     bool testExceptions()
     {
         bool testResult = true;
-
         bool exceptionThrown = false;
         Queue<int> queue6;
         try {
