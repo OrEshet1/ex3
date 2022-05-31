@@ -72,6 +72,7 @@ public:
                 this->pushBack(oldElement->getData());
                 oldElement = oldElement->getNextElement();
             }
+            throw;
         }
         return *this;
     }
@@ -94,12 +95,14 @@ public:
 	* @return
 	*      reference to the new element's value.
 	*/
-    void pushBack(const T &data) {
+    void pushBack(const T& data) 
+    {
         Element <T>* newElement = new Element<T>(data);
         if (m_last) {
             m_last->setNextElement(newElement);
             m_last = newElement;
-        } else {
+        }
+        else {
             m_first = newElement;
             m_last = newElement;
         }
