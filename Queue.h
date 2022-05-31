@@ -494,13 +494,6 @@ public:
         const Queue<T>* m_queue;
         int m_index;
     };
-#pragma endregion
-
-#pragma region Exceptions
-
-#pragma endregion
-
-#pragma region Element
 private:
     template <class T>
     /*This class represents a single element of a Queue,
@@ -577,8 +570,6 @@ private:
         T m_data;
         Element* m_nextElement;
     };
-#pragma endregion
-#pragma endregion
 };
 
 /*
