@@ -488,8 +488,6 @@ public:
             }
         };*/
         class InvalidOperation {};
-        friend class Queue<T>;  //IS THIS NECCESERY?
-
     private:
         const Queue<T>* m_queue;
         int m_index;
